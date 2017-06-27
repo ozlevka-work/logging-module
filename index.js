@@ -9,12 +9,7 @@ const makeLowLogger = (options) => {
     const log = Log.createLogger({
         name: opt.name || 'defaultLogger',
         level: opt.level || Log.INFO,
-        streams: [
-            {
-                level: 'trace',
-                stream: options.stream || process.stdout
-            }
-        ]
+        stream: options.stream || process.stdout
     });
 
 
@@ -31,12 +26,7 @@ const makeHighLogger = (options) => {
     const log = Log.createLogger({
         name: opt.name || 'defaultLogger',
         level: opt.level || Log.ERROR,
-        streams: [
-            {
-                level:'error',
-                stream: options.stream || process.stderr
-            }
-        ]
+        stream: options.stream || process.stderr
     });
 
 
@@ -193,3 +183,46 @@ module.exports.performance = (options) => {
     "use strict";
     return new PerformanceLoggerManager(options);
 };
+
+let Flow = undefined;
+let Security = undefined;
+let Performance = undefined;
+let level = 'info';
+let moduleOptions = {};
+
+module.exports.logger = {
+    setOptions(options) {
+        "use strict";
+        moduleOptions = options;
+    },
+
+    get flow() {
+        "use strict";
+        if( Flow == undefined ) {
+            Flow = new FlowLoggerManager(moduleOptions);
+        }
+
+        return Flow;
+    },
+
+    get security() {
+        "use strict";
+        if(Security == undefined) {
+            Security = new SecurityLoggerManager(moduleOptions);
+        }
+
+        return Security;
+    },
+
+
+    get performance() {
+        "use strict";
+
+        if(Performance == undefined) {
+            Performance = new PerformanceLoggerManager(moduleOptions);
+        }
+
+        return Performance;
+
+    }
+}

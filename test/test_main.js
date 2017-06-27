@@ -83,7 +83,7 @@ describe("Logger tests", () => {
         const flow = lib.flow(
             {
                 name:'test',
-                level:'info',
+                level:'debug',
                 stream: stream
             });
         flow.debug({key: 'test log', value: 'Hello test'}, "regular message");
@@ -98,7 +98,7 @@ describe("Logger tests", () => {
         const flow = lib.flow(
             {
                 name:'test',
-                level:'info',
+                level:'trace',
                 stream: stream
             });
         flow.trace({key: 'test log', value: 'Hello test'}, "regular message");
@@ -158,7 +158,7 @@ describe("Logger tests", () => {
         const sec = lib.security(
             {
                 name:'test',
-                level:'info',
+                level:'debug',
                 stream: stream
             });
         sec.debug({key: 'test log', value: 'Hello test'}, "regular message");
@@ -173,7 +173,7 @@ describe("Logger tests", () => {
         const sec = lib.security(
             {
                 name:'test',
-                level:'info',
+                level:'trace',
                 stream: stream
             });
         sec.trace({key: 'test log', value: 'Hello test'}, "regular message");
@@ -233,7 +233,7 @@ describe("Logger tests", () => {
         const p = lib.performance(
             {
                 name:'test',
-                level:'info',
+                level:'debug',
                 stream: stream
             });
         p.debug({key: 'test log', value: 'Hello test'}, "regular message");
@@ -248,7 +248,7 @@ describe("Logger tests", () => {
         const p = lib.performance(
             {
                 name:'test',
-                level:'info',
+                level:'trace',
                 stream: stream
             });
         p.trace({key: 'test log', value: 'Hello test'}, "regular message");
@@ -301,5 +301,53 @@ describe("Logger tests", () => {
         const logObject = JSON.parse(text);
         assert.equal(logObject.logType, 'performance', 'Must be flow child');
         assert.equal(logObject.level, 60, 'Must be fatal level')
+    });
+});
+
+describe('Module tests', () => {
+    "use strict";
+    it('should get flow log and print message to stream', () => {
+        let stream = new streams.WritableStream();
+        lib.logger.setOptions({
+            name:'test',
+            level:'info',
+            stream: stream
+        });
+        lib.logger.flow.info({"Hello":"World"});
+        const text = stream.toString();
+        const logObject = JSON.parse(text);
+
+        assert.equal(logObject.Hello, "World", 'Wrong message reseived');
+        assert.equal(logObject.logType, "flow", "Wrong log type")
+    });
+
+    it('should get security log and print message to stream', () => {
+        let stream = new streams.WritableStream();
+        lib.logger.setOptions({
+            name:'test',
+            level:'info',
+            stream: stream
+        });
+        lib.logger.security.info({"Hello":"World"});
+        const text = stream.toString();
+        const logObject = JSON.parse(text);
+
+        assert.equal(logObject.Hello, "World", 'Wrong message reseived');
+        assert.equal(logObject.logType, "security", "Wrong log type")
+    });
+
+    it('should get performance log and print message to stream', () => {
+        let stream = new streams.WritableStream();
+        lib.logger.setOptions({
+            name:'test',
+            level:'info',
+            stream: stream
+        });
+        lib.logger.performance.info({"Hello":"World"});
+        const text = stream.toString();
+        const logObject = JSON.parse(text);
+
+        assert.equal(logObject.Hello, "World", 'Wrong message reseived');
+        assert.equal(logObject.logType, "performance", "Wrong log type")
     });
 });
