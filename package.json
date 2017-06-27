@@ -12,5 +12,6 @@
   },
   "scripts": {
     "test": "node_modules/.bin/mocha"
-  }
+  },
+  "main": "index.js"
 }
