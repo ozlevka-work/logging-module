@@ -193,13 +193,38 @@ let moduleOptions = {};
 module.exports.logger = {
     setOptions(options) {
         "use strict";
-        moduleOptions = options;
+        moduleOptions.flowOptions = options;
+        moduleOptions.securityOptions = options;
+        moduleOptions.performanceOptions = options;
+        Flow = undefined;
+        Security = undefined;
+        Performance = undefined;
     },
+
+    setFlowOptions(options) {
+        "use strict";
+        moduleOptions.flowOptions = options;
+        Flow = undefined;
+    },
+
+    setPerformanceOptions(options) {
+        "use strict";
+        moduleOptions.performanceOptions = options;
+        Performance = undefined;
+    },
+
+
+    setSecurityOptions(options) {
+        "use strict";
+        moduleOptions.securityOptions = options;
+        Security = undefined;
+    },
+
 
     get flow() {
         "use strict";
         if( Flow == undefined ) {
-            Flow = new FlowLoggerManager(moduleOptions);
+            Flow = new FlowLoggerManager(moduleOptions.flowOptions);
         }
 
         return Flow;
@@ -208,7 +233,7 @@ module.exports.logger = {
     get security() {
         "use strict";
         if(Security == undefined) {
-            Security = new SecurityLoggerManager(moduleOptions);
+            Security = new SecurityLoggerManager(moduleOptions.securityOptions);
         }
 
         return Security;
@@ -219,10 +244,9 @@ module.exports.logger = {
         "use strict";
 
         if(Performance == undefined) {
-            Performance = new PerformanceLoggerManager(moduleOptions);
+            Performance = new PerformanceLoggerManager(moduleOptions.performanceOptions);
         }
 
         return Performance;
-
     }
 }

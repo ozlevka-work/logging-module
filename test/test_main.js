@@ -3,6 +3,7 @@ const assert = require('assert');
 const util = require('util');
 const lib = require('../index');
 const streams = require('memory-streams');
+const _ = require('underscore');
 
 
 
@@ -349,5 +350,79 @@ describe('Module tests', () => {
 
         assert.equal(logObject.Hello, "World", 'Wrong message reseived');
         assert.equal(logObject.logType, "performance", "Wrong log type")
+    });
+});
+
+
+describe('Options Reload tests', () => {
+    "use strict";
+    it('should check different levels in different endpoints', () => {
+        let stream = new streams.WritableStream();
+        lib.logger.setFlowOptions({
+            name:'flowTest',
+            level:'error',
+            stream: stream
+        });
+
+        lib.logger.setSecurityOptions({
+            name:'securityTest',
+            level:'info',
+            stream: stream
+        });
+
+        lib.logger.setPerformanceOptions({
+            name:'performanceTest',
+            level:'debug',
+            stream: stream
+        });
+
+
+        lib.logger.performance.debug("test ");
+        lib.logger.flow.error("test ");
+        lib.logger.security.info(" test");
+        let text = stream.toString();
+        text = text.replace(/\n/g,',');
+        let obj = JSON.parse('[' + text.substr(0, text.length - 1) + ']');
+        let sorted = _.sortBy(obj, (item) => {return item.level});
+        assert.ok(sorted[0].name == 'performanceTest' && sorted[1].name == 'securityTest' && sorted[2].name == 'flowTest');
+    });
+
+    it('should test reload options correct', () => {
+        let stream = new streams.WritableStream();
+
+        lib.logger.setOptions({
+            name: 'fake'
+        });
+
+        lib.logger.performance.debug("test ");
+        lib.logger.flow.error("test ");
+        lib.logger.security.info(" test");
+
+        lib.logger.setFlowOptions({
+            name:'flowTest',
+            level:'error',
+            stream: stream
+        });
+
+        lib.logger.setSecurityOptions({
+            name:'securityTest',
+            level:'info',
+            stream: stream
+        });
+
+        lib.logger.setPerformanceOptions({
+            name:'performanceTest',
+            level:'debug',
+            stream: stream
+        });
+
+        lib.logger.performance.debug("test ");
+        lib.logger.flow.error("test ");
+        lib.logger.security.info(" test");
+        let text = stream.toString();
+        text = text.replace(/\n/g,',');
+        let obj = JSON.parse('[' + text.substr(0, text.length - 1) + ']');
+        let sorted = _.sortBy(obj, (item) => {return item.level});
+        assert.ok(sorted[0].name == 'performanceTest' && sorted[1].name == 'securityTest' && sorted[2].name == 'flowTest');
     });
 });
