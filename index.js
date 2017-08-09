@@ -1,14 +1,22 @@
 const Log = require('bunyan');
 const _ = require('underscore');
 
-const Module = require('module');
+
+const legal_log_levels = {
+    trace: Log.TRACE,
+    debug: Log.DEBUG,
+    info: Log.INFO,
+    warn: Log.WARN,
+    error: Log.ERROR,
+    fatal: Log.FATAL
+};
 
 const makeLowLogger = (options) => {
     "use strict";
     const opt = options || {};
     const log = Log.createLogger({
         name: opt.name || 'defaultLogger',
-        level: opt.level || Log.INFO,
+        level: checkLevelExists(opt.level) || Log.INFO,
         stream: options.stream || process.stdout
     });
 
@@ -25,7 +33,7 @@ const makeHighLogger = (options) => {
     const opt = options || {};
     const log = Log.createLogger({
         name: opt.name || 'defaultLogger',
-        level: opt.level || Log.ERROR,
+        level: checkLevelExists(opt.level) || Log.ERROR,
         stream: options.stream || process.stderr
     });
 
@@ -184,10 +192,40 @@ module.exports.performance = (options) => {
     return new PerformanceLoggerManager(options);
 };
 
+/**
+ * Check if level is exists if not return empty.
+ * Then logger will be created with INFO level
+ * @param level => bunyan log level
+ */
+const checkLevelExists = (level) => {
+    "use strict";
+    let log_level = undefined;
+    if(typeof level === 'string') {
+        log_level = _.filter(Object.keys(legal_log_levels), (l) => {
+            return level.toLowerCase() === l;
+        });
+    }
+
+    if(typeof level === 'number') {
+        log_level = _.filter(_.values(legal_log_levels), (ln) => {
+            return ln === level;
+        });
+    }
+
+    if(Array.isArray(log_level) && log_level.length > 0) {
+        return log_level[0];
+    }
+
+    if(Array.isArray(log_level)) {
+        return undefined;
+    }
+
+    return log_level;
+};
+
 let Flow = undefined;
 let Security = undefined;
 let Performance = undefined;
-let level = 'info';
 let moduleOptions = {};
 
 module.exports.logger = {

@@ -351,6 +351,34 @@ describe('Module tests', () => {
         assert.equal(logObject.Hello, "World", 'Wrong message reseived');
         assert.equal(logObject.logType, "performance", "Wrong log type")
     });
+
+    it('should create flow log with wrong level', () => {
+        let stream = new streams.WritableStream();
+        lib.logger.setOptions(
+            {
+                name: 'test wrong level',
+                level: 'bla bla',
+                stream: stream
+            }
+        );
+
+        lib.logger.flow.info("Hello wrong level");
+    });
+
+    it('should create log when log level given as number', () => {
+        let stream = new streams.WritableStream();
+        lib.logger.setOptions({
+            name:'test',
+            level:30,
+            stream: stream
+        });
+        lib.logger.flow.info({"Hello":"World"});
+        const text = stream.toString();
+        const logObject = JSON.parse(text);
+
+        assert.equal(logObject.Hello, "World", 'Wrong message reseived');
+        assert.equal(logObject.logType, "flow", "Wrong log type")
+    })
 });
 
 
