@@ -10,6 +10,7 @@
     "memory-streams": "^0.1.2",
     "mocha": "^3.4.2"
   },
+  "bundledDependencies": [],
   "scripts": {
     "test": "node_modules/.bin/mocha"
   },
