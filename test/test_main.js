@@ -378,7 +378,22 @@ describe('Module tests', () => {
 
         assert.equal(logObject.Hello, "World", 'Wrong message reseived');
         assert.equal(logObject.logType, "flow", "Wrong log type")
-    })
+    });
+
+    it('shoul test system bunyan fields when send json object issue #690', () => {
+        let stream = new streams.WritableStream();
+        lib.logger.setOptions({
+            name:'test',
+            level:30,
+            stream: stream
+        });
+
+        lib.logger.flow.info({test1: "test1", test2: {test: "1"}, "type": "data"});
+
+        const text = stream.toString();
+
+        console.log(text);
+    });
 });
 
 
