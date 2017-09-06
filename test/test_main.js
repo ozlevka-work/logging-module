@@ -352,6 +352,21 @@ describe('Module tests', () => {
         assert.equal(logObject.logType, "performance", "Wrong log type")
     });
 
+    it('should get report and print message to stream', () => {
+        let stream = new streams.WritableStream();
+        lib.logger.setOptions({
+            name:'test',
+            level:'info',
+            stream: stream
+        });
+        lib.logger.report.report({"Hello":"World"});
+        const text = stream.toString();
+        const logObject = JSON.parse(text);
+
+        assert.equal(logObject.Hello, "World", 'Wrong message reseived');
+        assert.equal(logObject.logType, "report", "Wrong log type")
+    });
+
     it('should create flow log with wrong level', () => {
         let stream = new streams.WritableStream();
         lib.logger.setOptions(
@@ -467,5 +482,23 @@ describe('Options Reload tests', () => {
         let obj = JSON.parse('[' + text.substr(0, text.length - 1) + ']');
         let sorted = _.sortBy(obj, (item) => {return item.level});
         assert.ok(sorted[0].name == 'performanceTest' && sorted[1].name == 'securityTest' && sorted[2].name == 'flowTest');
+    });
+
+    it('should test that report continue write on info level', () => {
+        let stream = new streams.WritableStream();
+
+        lib.logger.setOptions({
+            name: 'fake',
+            level: "fatal",
+            stream: stream
+        });
+
+        lib.logger.report.report("Any value", {test: "Test of report"}, {more: "Of nay value"});
+
+        const text = stream.toString();
+
+        const obj = JSON.parse(text);
+
+        assert.ok(obj.level == 30, 'Wrong level for report');
     });
 });
