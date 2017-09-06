@@ -109,6 +109,21 @@ function FlowLoggerManager(options)  {
     };
 };
 
+function ReportLoggerManager(stream) {
+    "use strict";
+    this.generalManager = undefined;
+    if(stream) {
+        this.generalManager = new GenericLoggerManager({name: 'Report', level: 'info', stream: stream, child: {logType: 'report'}})
+    } else {
+        this.generalManager = new GenericLoggerManager({name: 'Report', level: 'info', child: {logType: 'report'}});
+    }
+
+
+    this.report = (...args) => {
+        this.generalManager.info(args);
+    }
+}
+
 module.exports.flow = (options) => {
     "use strict";
     return new FlowLoggerManager(options);
@@ -226,6 +241,7 @@ const checkLevelExists = (level) => {
 let Flow = undefined;
 let Security = undefined;
 let Performance = undefined;
+let Reports = undefined;
 let moduleOptions = {};
 
 module.exports.logger = {
@@ -237,6 +253,10 @@ module.exports.logger = {
         Flow = undefined;
         Security = undefined;
         Performance = undefined;
+        if(options.stream) {
+            moduleOptions.stream = options.stream;
+            Reports = undefined;
+        }
     },
 
     setFlowOptions(options) {
@@ -286,5 +306,14 @@ module.exports.logger = {
         }
 
         return Performance;
+    },
+
+    get report() {
+        "use strict";
+        if(Reports == undefined) {
+            Reports = new ReportLoggerManager(moduleOptions.stream);
+        }
+
+        return Reports;
     }
-}
+};
