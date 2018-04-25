@@ -502,3 +502,28 @@ describe('Options Reload tests', () => {
         assert.ok(obj.level == 30, 'Wrong level for report');
     });
 });
+
+
+describe('Syslog Logger tests', () => {
+    it('should run simple message to syslog', () => {
+        const logger = lib.logger;
+        logger.setOptions({
+            name: 'syslog',
+            port: 5025,
+            level: 'info'
+        });
+
+        logger.syslog.info("This are simple message");
+    });
+
+    it('should run json message to syslog', () => {
+        const logger = lib.logger;
+        logger.setOptions({
+            name: 'syslog',
+            port: 5025,
+            level: 'info'
+        });
+
+        logger.syslog.info({message: 'Hello simple message'}, {test: {message: 'Hello object message'}});
+    })
+});
