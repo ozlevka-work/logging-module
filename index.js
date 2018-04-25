@@ -156,16 +156,16 @@ function SysLoggerManager(options) {
     "use strict";
     this.syslogOptions = options || {};
 
-    this.syslogHost = this.syslogOptions.host || 'localhost';
-    this.syslogPort = this.syslogOptions.port || 514;
+    this.syslogHost = this.syslogOptions.host || 'elk';
+    this.syslogPort = this.syslogOptions.port || 5035;
     this.syslogOptions.streams = [{
         level: getSyslogLevel(this.syslogOptions.level),
         type: 'raw',
         stream: syslog.createBunyanStream({
             type: 'tcp',
             facility: syslog.local0,
-            host: this.syslogHost || 'elk',
-            port: this.syslogPort || 5035
+            host: this.syslogHost,
+            port: this.syslogPort
         })
     }];
 

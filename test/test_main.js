@@ -509,7 +509,7 @@ describe('Syslog Logger tests', () => {
         const logger = lib.logger;
         logger.setOptions({
             name: 'syslog',
-            port: 5035,
+            host: 'localhost',
             level: 'info'
         });
 
@@ -520,6 +520,7 @@ describe('Syslog Logger tests', () => {
         const logger = lib.logger;
         logger.setOptions({
             name: 'syslog',
+            host: 'localhost',
             level: 'info'
         });
 
@@ -531,8 +532,7 @@ describe('Syslog Logger tests', () => {
         const logger = lib.logger;
         logger.setOptions({
             name: 'syslog',
-            host: 'elk',
-            port: 5035,
+            host: 'localhost',
             level: 'info'
         });
 
