@@ -164,8 +164,8 @@ function SysLoggerManager(options) {
         stream: syslog.createBunyanStream({
             type: 'tcp',
             facility: syslog.local0,
-            host: this.syslogHost || 'localhost',
-            port: this.syslogPort || 514
+            host: this.syslogHost || 'elk',
+            port: this.syslogPort || 5035
         })
     }];
 

@@ -520,10 +520,22 @@ describe('Syslog Logger tests', () => {
         const logger = lib.logger;
         logger.setOptions({
             name: 'syslog',
+            level: 'info'
+        });
+
+        logger.syslog.info({message: 'Hello simple message'}, {test: {message: "Hello object message"}});
+    });
+
+
+    it('should test syslog parsing', () => {
+        const logger = lib.logger;
+        logger.setOptions({
+            name: 'syslog',
+            host: 'elk',
             port: 5035,
             level: 'info'
         });
 
-        logger.syslog.info({message: 'Hello simple message'}, {test: {message: 'Hello object message'}});
-    })
+        logger.syslog.info({message: 'Hello simple message', second: { level: 1, message: "Past" } });
+    });
 });
