@@ -509,7 +509,7 @@ describe('Syslog Logger tests', () => {
         const logger = lib.logger;
         logger.setOptions({
             name: 'syslog',
-            port: 5025,
+            port: 5035,
             level: 'info'
         });
 
@@ -520,7 +520,7 @@ describe('Syslog Logger tests', () => {
         const logger = lib.logger;
         logger.setOptions({
             name: 'syslog',
-            port: 5025,
+            port: 5035,
             level: 'info'
         });
 
