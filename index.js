@@ -1,5 +1,6 @@
 const Log = require('bunyan');
 const _ = require('underscore');
+const syslog = require('bunyan-syslog');
 
 
 const legal_log_levels = {
@@ -14,10 +15,16 @@ const legal_log_levels = {
 const makeLowLogger = (options) => {
     "use strict";
     const opt = options || {};
+    let streams = undefined;
+    if (opt.streams) {
+        streams = opt.streams
+    } else {
+        streams = [{stream: options.stream || process.stdout}];
+    }
     const log = Log.createLogger({
         name: opt.name || 'defaultLogger',
         level: checkLevelExists(opt.level) || Log.INFO,
-        stream: options.stream || process.stdout
+        streams: streams
     });
 
 
@@ -31,12 +38,17 @@ const makeLowLogger = (options) => {
 const makeHighLogger = (options) => {
     "use strict";
     const opt = options || {};
+    let streams = undefined;
+    if (opt.streams) {
+        streams = opt.streams
+    } else {
+        streams = [{stream: options.stream || process.stdout}];
+    }
     const log = Log.createLogger({
         name: opt.name || 'defaultLogger',
         level: checkLevelExists(opt.level) || Log.ERROR,
-        stream: options.stream || process.stderr
+        streams: streams
     });
-
 
     if (opt.child) {
         return log.child(opt.child);
@@ -122,6 +134,67 @@ function ReportLoggerManager(stream) {
     this.report = (...args) => {
         this.generalManager.info(args);
     }
+}
+
+const getSyslogLevel = (level) => {
+     const l = checkLevelExists(level) || Log.ERROR;
+     switch (l) {
+         case Log.FATAL:
+             return 'emerg';
+         case Log.ERROR:
+             return 'error';
+         case Log.WARN:
+             return 'warn';
+         case Log.INFO:
+             return 'info';
+         default:
+             return "debug";
+     }
+};
+
+function SysLoggerManager(options) {
+    "use strict";
+    this.syslogOptions = options || {};
+
+    this.syslogHost = this.syslogOptions.host || 'elk';
+    this.syslogPort = this.syslogOptions.port || 5035;
+    this.syslogOptions.streams = [{
+        level: getSyslogLevel(this.syslogOptions.level),
+        type: 'raw',
+        stream: syslog.createBunyanStream({
+            type: 'tcp',
+            facility: syslog.local0,
+            host: this.syslogHost,
+            port: this.syslogPort
+        })
+    }];
+
+    this.generalManager = new GenericLoggerManager(this.syslogOptions);
+
+    this.info = (...args) => {
+        this.generalManager.info(args);
+    };
+
+    this.trace = (...args) => {
+        this.generalManager.trace(args);
+    };
+
+    this.fatal = (...args) => {
+        this.generalManager.fatal(args);
+    };
+
+    this.error = (...args) => {
+        this.generalManager.error(args);
+    };
+
+    this.debug = (...args) => {
+        this.generalManager.debug(args);
+    };
+
+    this.warn = (...args) => {
+        this.generalManager.warn(args);
+    };
+
 }
 
 module.exports.flow = (options) => {
@@ -242,6 +315,7 @@ let Flow = undefined;
 let Security = undefined;
 let Performance = undefined;
 let Reports = undefined;
+let Syslog = undefined;
 let moduleOptions = {};
 
 module.exports.logger = {
@@ -250,9 +324,12 @@ module.exports.logger = {
         moduleOptions.flowOptions = options;
         moduleOptions.securityOptions = options;
         moduleOptions.performanceOptions = options;
+        moduleOptions.syslogOptions = options;
         Flow = undefined;
         Security = undefined;
         Performance = undefined;
+        Syslog = undefined;
+
         if(options.stream) {
             moduleOptions.stream = options.stream;
             Reports = undefined;
@@ -276,6 +353,12 @@ module.exports.logger = {
         "use strict";
         moduleOptions.securityOptions = options;
         Security = undefined;
+    },
+
+    setSyslogOptions(options) {
+        "use strict";
+        moduleOptions.syslogOptions = options;
+        Syslog = undefined;
     },
 
 
@@ -315,5 +398,14 @@ module.exports.logger = {
         }
 
         return Reports;
+    },
+
+    get syslog() {
+       "use strict";
+       if(Syslog == undefined) {
+           Syslog = new SysLoggerManager(moduleOptions.syslogOptions);
+       }
+
+       return Syslog;
     }
 };

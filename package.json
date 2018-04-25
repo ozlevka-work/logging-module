@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "async": "^2.4.1",
-    "underscore": "^1.8.3",
-    "bunyan": "^1.8.10"
+    "bunyan": "^1.8.10",
+    "bunyan-syslog": "github:mcavage/node-bunyan-syslog#9bdb9eb62a763c7d30e032a619138032d5ff8771",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "memory-streams": "^0.1.2",
