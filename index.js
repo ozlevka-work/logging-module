@@ -1,6 +1,5 @@
 const Log = require('bunyan');
 const _ = require('underscore');
-const syslog = require('bunyan-syslog');
 
 
 const legal_log_levels = {
