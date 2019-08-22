@@ -85,6 +85,10 @@ function GenericLoggerManager(options) {
     this.warn = (params) => {
         this.lowLogger.warn.apply(this.lowLogger, params);
     };
+
+    this.child = (params) => {
+
+    }
 };
 
 function FlowLoggerManager(options)  {
@@ -153,18 +157,17 @@ const getSyslogLevel = (level) => {
 
 function SysLoggerManager(options) {
     "use strict";
+    const EsStream = require('es-stream');
     this.syslogOptions = options || {};
 
-    this.syslogHost = this.syslogOptions.host || 'elk';
-    this.syslogPort = this.syslogOptions.port || 5035;
+    this.esHost = this.syslogOptions.host || 'localhost';
+    this.esPort = this.syslogOptions.port || 9200;
     this.syslogOptions.streams = [{
         level: getSyslogLevel(this.syslogOptions.level),
         type: 'raw',
-        stream: syslog.createBunyanStream({
-            type: 'tcp',
-            facility: syslog.local0,
-            host: this.syslogHost,
-            port: this.syslogPort
+        stream: new EsStream({
+            node: `http://${this.esHost}:${this.esPort}`,
+            templateName: "reports"
         })
     }];
 

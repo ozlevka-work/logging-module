@@ -4,7 +4,8 @@
   "dependencies": {
     "async": "^2.4.1",
     "bunyan": "^1.8.10",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "es-stream": "git+https://github.com/ozlevka-ericom/bunyan-elasticsearch.git#server"
   },
   "devDependencies": {
     "memory-streams": "^0.1.2",
