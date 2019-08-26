@@ -167,7 +167,7 @@ function SysLoggerManager(options) {
         type: 'raw',
         stream: new EsStream({
             node: `http://${this.esHost}:${this.esPort}`,
-            templateName: "reports"
+            templateName: options.templateName || "reports"
         })
     }];
 
