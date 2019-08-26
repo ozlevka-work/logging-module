@@ -167,7 +167,9 @@ function SysLoggerManager(options) {
         type: 'raw',
         stream: new EsStream({
             node: `http://${this.esHost}:${this.esPort}`,
-            templateName: options.templateName || "reports"
+            host: `http://${this.esHost}:${this.esPort}`,
+            templateName: options.templateName || "reports",
+            apiVersion: "7.0"
         })
     }];
 
