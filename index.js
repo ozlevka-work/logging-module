@@ -80,7 +80,8 @@ function FlowLoggerManager(options)  {
     "use strict";
     this.flowOptions = options || {};
     this.flowOptions.child = {
-      logType: 'flow'
+      logType: 'flow',
+      logSystemID: process.env.CLUSTER_SYSTEM_ID || "11111111-1111-1111-1111-111111111111"
     };
     this.generalManager = new GenericLoggerManager(this.flowOptions);
 
@@ -111,13 +112,20 @@ function FlowLoggerManager(options)  {
 
 function ReportLoggerManager(stream) {
     "use strict";
-    this.generalManager = undefined;
-    if(stream) {
-        this.generalManager = new GenericLoggerManager({name: 'Report', level: 'info', stream: stream, child: {logType: 'report'}})
-    } else {
-        this.generalManager = new GenericLoggerManager({name: 'Report', level: 'info', child: {logType: 'report'}});
+    let options = {
+        name: 'Report', 
+        level: 'info', 
+        child: {
+            logType: 'report',
+            logSystemID: process.env.CLUSTER_SYSTEM_ID || "11111111-1111-1111-1111-111111111111"
+        }
     }
 
+    if (stream) {
+        options.stream = stream;
+    }
+
+    this.generalManager = new GenericLoggerManager(options);
 
     this.report = (...args) => {
         this.generalManager.info(args);
@@ -133,7 +141,8 @@ function SecurityLoggerManager(options) {
     "use strict";
     this.flowOptions = options || {};
     this.flowOptions.child = {
-        logType: 'security'
+        logType: 'security',
+        logSystemID: process.env.CLUSTER_SYSTEM_ID || "11111111-1111-1111-1111-111111111111"
     };
     this.generalManager = new GenericLoggerManager(this.flowOptions);
 
@@ -172,7 +181,8 @@ function PerformanceLoggerManager(options) {
     "use strict";
     this.flowOptions = options || {};
     this.flowOptions.child = {
-        logType: 'performance'
+        logType: 'performance',
+        logSystemID: process.env.CLUSTER_SYSTEM_ID || "11111111-1111-1111-1111-111111111111"
     };
     this.generalManager = new GenericLoggerManager(this.flowOptions);
 
