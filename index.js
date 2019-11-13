@@ -1,6 +1,7 @@
 const Log = require('bunyan');
 const _ = require('underscore');
 
+const CLUSTER_DEF_SYSTEM_ID = "11111111-1111-1111-1111-111111111111";
 
 const legal_log_levels = {
     trace: Log.TRACE,
@@ -81,7 +82,7 @@ function FlowLoggerManager(options)  {
     this.flowOptions = options || {};
     this.flowOptions.child = {
       logType: 'flow',
-      logSystemID: process.env.CLUSTER_SYSTEM_ID || "11111111-1111-1111-1111-111111111111"
+      logSystemID: process.env.CLUSTER_SYSTEM_ID || CLUSTER_DEF_SYSTEM_ID
     };
     this.generalManager = new GenericLoggerManager(this.flowOptions);
 
@@ -117,7 +118,7 @@ function ReportLoggerManager(stream) {
         level: 'info', 
         child: {
             logType: 'report',
-            logSystemID: process.env.CLUSTER_SYSTEM_ID || "11111111-1111-1111-1111-111111111111"
+            logSystemID: process.env.CLUSTER_SYSTEM_ID || CLUSTER_DEF_SYSTEM_ID
         }
     }
 
@@ -142,7 +143,7 @@ function SecurityLoggerManager(options) {
     this.flowOptions = options || {};
     this.flowOptions.child = {
         logType: 'security',
-        logSystemID: process.env.CLUSTER_SYSTEM_ID || "11111111-1111-1111-1111-111111111111"
+        logSystemID: process.env.CLUSTER_SYSTEM_ID || CLUSTER_DEF_SYSTEM_ID
     };
     this.generalManager = new GenericLoggerManager(this.flowOptions);
 
@@ -182,7 +183,7 @@ function PerformanceLoggerManager(options) {
     this.flowOptions = options || {};
     this.flowOptions.child = {
         logType: 'performance',
-        logSystemID: process.env.CLUSTER_SYSTEM_ID || "11111111-1111-1111-1111-111111111111"
+        logSystemID: process.env.CLUSTER_SYSTEM_ID || CLUSTER_DEF_SYSTEM_ID
     };
     this.generalManager = new GenericLoggerManager(this.flowOptions);
 
