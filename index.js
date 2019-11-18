@@ -69,7 +69,8 @@ MyStream.prototype.write = function (logStr) {
             name: logJson.name,
             pid: logJson.pid,
             v: logJson.v,
-            msg: `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${newLogStr}`
+            //msg: `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${newLogStr}`
+            msg: "EYAL !!!!!!!!!!!!!!!!!!!1"
         }
 
         console.log("begin writing truncated log!")
