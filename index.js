@@ -58,7 +58,11 @@ MyStream.prototype.write = function (logStr) {
     try {
         // write a 'raw' log to stderr
 
-        let truncatedLogStr = logBuf.toString('utf8', 0, this.logLimitBytes);
+        // Can't use 'truncatedLogStr' because it is a broken JSOn and elasticsearcg fails parsing it
+        // let truncatedLogStr = logBuf.toString('utf8', 0, this.logLimitBytes);
+        // let newMsg = `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${truncatedLogStr}`
+        
+        let newMsg = `**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****`
         let logJson = JSON.parse(logStr);
 
         let newLogJson = {
@@ -70,8 +74,7 @@ MyStream.prototype.write = function (logStr) {
             pid: logJson.pid,
             v: logJson.v,
             time: logJson.time,
-            //msg: `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${truncatedLogStr}`
-            msg: `**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****`
+            msg: newMsg
         }
 
         let newLogStr = JSON.stringify(newLogJson);
