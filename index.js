@@ -73,6 +73,7 @@ MyStream.prototype.write = function (logStr) {
         }
 
         console.log("begin writing truncated log")
+        console.log("new !!!!!!!!!!1")
         let levLog = JSON.stringify(newLogJson);
         console.log(levLog)
         process.stderr.write(levLog);
