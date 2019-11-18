@@ -72,12 +72,13 @@ MyStream.prototype.write = function (logStr) {
             msg: `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${newLogStr}`
         }
 
-        console.log("begin writing truncated log")
-        console.log("new !!!!!!!!!!1")
+        console.log("begin writing truncated log!")
+        console.log("new !!!!!!!!!! new")
         let levLog = JSON.stringify(newLogJson);
-        console.log(levLog)
+        levLog += "\n";
+        //console.log(levLog)
         process.stderr.write(levLog);
-        console.log("end writing truncated log")
+        console.log("end writing truncated log!")
     }
     catch (err) {
         console.log("error writing truncated log")
