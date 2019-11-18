@@ -58,7 +58,7 @@ MyStream.prototype.write = function (logStr) {
     try {
         // write a 'raw' log to stderr
 
-        let newLogStr = logBuf.toString('utf8', 0, this.logLimitBytes);
+        let truncatedLogStr = logBuf.toString('utf8', 0, this.logLimitBytes);
         let logJson = JSON.parse(logStr);
 
         let newLogJson = {
@@ -70,21 +70,16 @@ MyStream.prototype.write = function (logStr) {
             pid: logJson.pid,
             v: logJson.v,
             time: logJson.time,
-            //msg: `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${newLogStr}`
-            msg: "EYAL !!!!!!!!!!!!!!!!!!!1"
+            //msg: `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${truncatedLogStr}`
+            msg: `**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****`
         }
 
-        console.log("begin writing truncated log!")
-        console.log("new !!!!!!!!!! new")
-        let levLog = JSON.stringify(newLogJson);
-        levLog += "\n";
-        //console.log(levLog)
-        process.stderr.write(levLog);
-        console.log("end writing truncated log!")
+        let newLogStr = JSON.stringify(newLogJson);
+        newLogStr += "\n"; // without the end-line, stderr will not flush it!
+        process.stderr.write(newLogStr);
     }
     catch (err) {
-        console.log("error writing truncated log")
-        process.stderr.write(`Failed handling too long log message: ${err.message}`);
+        process.stderr.write(`Failed handling too long log message: ${err.message}\n`);
     }
 }
 
