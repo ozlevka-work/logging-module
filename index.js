@@ -72,9 +72,12 @@ MyStream.prototype.write = function (logStr) {
             msg: `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${newLogStr}`
         }
 
+        console.log("begin writing truncated log")
         process.stderr.write(JSON.stringify(newLogJson));
+        console.log("end writing truncated log")
     }
     catch (err) {
+        console.log("error writing truncated log")
         process.stderr.write(`Failed handling too long log message: ${err.message}`);
     }
 }
