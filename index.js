@@ -11,15 +11,85 @@ const legal_log_levels = {
     fatal: Log.FATAL
 };
 
+// See documentation on bunyan streams here: https://www.npmjs.com/package/bunyan#streams
+
+function MyStream(stream) {
+    this.stream = stream;
+    this.logLimitBytes = -1;
+
+    if ('fd' in stream && (stream.fd === 1 /* stdout */ || stream.fd === 2 /* stderr */ )) {
+        // std is limitted to 64 KBytes (65536 bytes) by bufio maximum buffer size
+        // see 'MaxScanTokenSize’ in https://golang.org/pkg/bufio/#Scanner.Buffer
+        // Limit our logger to 60 KBytes
+        this.logLimitBytes = 60 * 1024;
+    }
+}
+
+MyStream.prototype.write = function (logStr) {
+    // string.length returns the number of characters in the string.
+    // we need to ansure the number of bytes in the string.
+
+    let logIt = false;
+    let logBuf;
+    let logLenBytes;
+    let logLenChars = logStr.length;
+    
+    if (this.logLimitBytes === -1) {
+        logIt = true;
+    }
+    else if ((logLenChars * 4) <= this.logLimitBytes) {
+        // maximum number of bytes a single character can take is 4
+        logIt = true;
+    }
+    else {
+        // need to calculate the actuall number of bytes in the string
+        logBuf = Buffer.from(logStr);
+        logLenBytes = logBuf.length;
+        if (logLenBytes <= this.logLimitBytes) {
+            logIt = true;
+        }
+    }
+
+    if (logIt === true) {
+        this.stream.write(logStr);
+        return;
+    }
+
+    try {
+        // write a 'raw' log to stderr
+
+        let newLogStr = logBuf.toString('utf8', 0, this.logLimitBytes);
+        let logJson = JSON.parse(logStr);
+
+        let newLogJson = {
+            level: 60,  // fatal
+            hostname: logJson.hostname,
+            logType: logJson.logType,
+            logSystemID: logJson.logSystemID,
+            name: logJson.name,
+            pid: logJson.pid,
+            v: logJson.v,
+            msg: `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${newLogStr}`
+        }
+
+        process.stderr.write(JSON.stringify(newLogJson));
+    }
+    catch (err) {
+        process.stderr.write(`Failed handling too long log message: ${err.message}`);
+    }
+}
+
 const makeLowLogger = (options) => {
     "use strict";
     const opt = options || {};
     const log = Log.createLogger({
         name: opt.name || 'defaultLogger',
-        level: checkLevelExists(opt.level) || Log.INFO,
-        stream: options.stream || process.stdout
+        streams: [{
+            level: checkLevelExists(opt.level) || Log.INFO,
+            type: 'stream',
+            stream: new MyStream(options.stream || process.stdout)
+        }]
     });
-
 
     if (opt.child) {
         return log.child(opt.child);
@@ -33,8 +103,11 @@ const makeHighLogger = (options) => {
     const opt = options || {};
     const log = Log.createLogger({
         name: opt.name || 'defaultLogger',
-        level: checkLevelExists(opt.level) || Log.ERROR,
-        stream: options.stream || process.stderr
+        streams: [{
+            level: checkLevelExists(opt.level) || Log.ERROR,
+            type: 'stream',
+            stream: new MyStream(options.stream || process.stderr)
+        }]
     });
 
 
