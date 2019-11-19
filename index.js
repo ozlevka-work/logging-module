@@ -1,6 +1,6 @@
 const Log = require('bunyan');
 const _ = require('underscore');
-
+const js2xmlparser = require("js2xmlparser");
 
 const legal_log_levels = {
     trace: Log.TRACE,
@@ -58,12 +58,12 @@ MyStream.prototype.write = function (logStr) {
     try {
         // write a 'raw' log to stderr
 
-        // Can't use 'truncatedLogStr' because it is a broken JSOn and elasticsearcg fails parsing it
-        // let truncatedLogStr = logBuf.toString('utf8', 0, this.logLimitBytes);
-        // let newMsg = `[**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****] : ${truncatedLogStr}`
+        // convert the original log from json to xml, so elasticsearcg will not fail to parse it (because we truncate it which yields a broken JSON)
         
-        let newMsg = `**** LOG TRUNCATED. ORIGINAL BYTES LENGTH ${logLenBytes} (${logLenChars} CHARACTERS) ****`
         let logJson = JSON.parse(logStr);
+        let logXml = js2xmlparser.parse("TruncatedLog", logJson, { format: { indent : " ", newline: " " } });
+        let truncatedLogXml = logXml.substring(0, 1024);
+        let newMsg = `**** LOG TRUNCATED. ORIGINAL MESSAGE LENGTH ${logLenBytes} BYTES (${logLenChars} CHARACTERS) **** : ${truncatedLogXml}`
 
         let newLogJson = {
             level: 60,  // fatal
