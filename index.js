@@ -61,7 +61,17 @@ MyStream.prototype.write = function (logStr) {
         // convert the original log from json to xml, so elasticsearcg will not fail to parse it (because we truncate it which yields a broken JSON)
         
         let logJson = JSON.parse(logStr);
-        let logXml = js2xmlparser.parse("TruncatedLog", logJson, { format: { indent : " ", newline: " " } });
+        let xmlParseOptions = { 
+            declaration : {
+                include : false
+            },
+            format: 
+            { 
+                indent : " ", 
+                newline: " " 
+            } 
+        }
+        let logXml = js2xmlparser.parse("TruncatedLog", logJson);
         let truncatedLogXml = logXml.substring(0, 1024);
         let newMsg = `**** LOG TRUNCATED. ORIGINAL MESSAGE LENGTH ${logLenBytes} BYTES (${logLenChars} CHARACTERS) **** : ${truncatedLogXml}`
 
