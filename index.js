@@ -260,6 +260,7 @@ function SysLoggerManager(options) {
     "use strict";
     const EsStream = require('es-stream');
     this.syslogOptions = options || {};
+    this.syslogOptions.logSystemID = process.env.CLUSTER_SYSTEM_ID || CLUSTER_DEF_SYSTEM_ID
 
     this.esHost = this.syslogOptions.host || 'localhost';
     this.esPort = this.syslogOptions.port || 9200;
