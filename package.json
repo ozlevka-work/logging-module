@@ -4,7 +4,7 @@
   "dependencies": {
     "async": "^2.4.1",
     "bunyan": "^1.8.10",
-    "underscore": "^1.8.3"
+    "underscore": "^1.12.1"
   },
   "devDependencies": {
     "memory-streams": "^0.1.2",
