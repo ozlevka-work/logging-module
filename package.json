@@ -2,7 +2,7 @@
   "name": "log-module",
   "version": "0.0.1",
   "dependencies": {
-    "async": "^2.4.1",
+    "async": "^2.6.4",
     "bunyan": "^1.8.10",
     "underscore": "^1.8.3"
   },
